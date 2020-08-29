@@ -1,0 +1,43 @@
+from django.db import models
+
+# Create your models here.
+
+class Campaign(models.Model):
+    name = models.CharField(max_length=30)
+    candidate = models.CharField(max_length=20)
+    description = models.TextField()
+    email = models.EmailField()
+
+    def __str__(self):
+        return self.name
+
+
+class Job(models.Model): 
+    title = models.CharField(max_length=200)
+    description = models.TextField(default='')
+    total_count = models.IntegerField('total jobs at time of creation')
+    in_progress_count = models.IntegerField('total jobs claimed')
+    created_on = models.DateTimeField('date created')
+    zip_code = models.CharField(max_length=5)
+    pay = models.DecimalField(max_digits=5, decimal_places=2)
+    campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+
+    def remaining_count(self): 
+        return self.total_count - self.in_progress_count
+
+    def __str__(self):
+        return self.title
+
+
+class Worker(models.Model):
+    first_name = models.CharField(max_length=20)
+    last_name = models.CharField(max_length=20)
+    email = models.EmailField()
+    created_on = models.DateTimeField('date created')
+    jobs_in_progress = models.ManyToManyField(Job, related_name='current_workers')
+    jobs_completed = models.ManyToManyField(Job, related_name='finished_workers')
+    pay_earned = models.DecimalField(max_digits=8, decimal_places=2)
+
+    def __str__(self):
+        return "{} {}".format(self.first_name, self.last_name)
+
