@@ -27,17 +27,3 @@ class Job(models.Model):
 
     def __str__(self):
         return self.title
-
-
-class Worker(models.Model):
-    first_name = models.CharField(max_length=20)
-    last_name = models.CharField(max_length=20)
-    email = models.EmailField()
-    created_on = models.DateTimeField('date created')
-    jobs_in_progress = models.ManyToManyField(Job, related_name='current_workers')
-    jobs_completed = models.ManyToManyField(Job, related_name='finished_workers')
-    pay_earned = models.DecimalField(max_digits=8, decimal_places=2)
-
-    def __str__(self):
-        return "{} {}".format(self.first_name, self.last_name)
-
