@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{ job.title }}</h1>
+<p>{{ job.descriptoin }}</p>
+<p>canidate based in: {{ job.zipcode }}</p>
+<p>campaign: {{ job.campaign.name }}</p>
+<p>for: {{ job.campaign.candidate }}</p>
+
+{% endblock %}

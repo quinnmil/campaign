@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse, redirect
 
-from django.views.generic import ListView
+from django.views import generic
 
 # from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
@@ -27,10 +27,15 @@ def index(request):
     return render(request, 'board.html', data)
 
 
-def jobDetails(request):
-    return HttpResponse("You're looking at a job detail page")
-
-class JobsList(ListView): 
+class JobsList(generic.ListView):
     model = Job
     context_object_name = 'jobs'
 
+
+class DetailView(generic.DetailView):
+    model = Job
+    context_object_name = 'job'
+
+    # def get_context_data(self, **kwargs):
+    #     # call base implementation first to get a context
+    #     context = super().get_context_data(**kwargs)
