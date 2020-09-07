@@ -3,9 +3,16 @@
 {% block content %}
 
 <h1>{{ job.title }}</h1>
-<p>{{ job.descriptoin }}</p>
+<h3> Descripton: </h3>
+    <p>{{ job.description }}</p>
+
 <p>canidate based in: {{ job.zipcode }}</p>
 <p>campaign: {{ job.campaign.name }}</p>
 <p>for: {{ job.campaign.candidate }}</p>
 
+<p> There are currently <strong> {{ job.remaining_count }} </strong> remaining spots availble. </p> 
+<form method="post" action={% url 'gigs:claim' %}> 
+    {% csrf_token %}
+    <input type="hidden" name="job_id", value={{job.pk}}> 
+    <button class="btn btn-primary btn-lg" type="submit"> Claim This Gig </a>
 {% endblock %}

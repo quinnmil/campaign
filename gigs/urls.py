@@ -1,11 +1,11 @@
 from django.urls import path
 
-from gigs.views import index, JobsList, DetailView
+from gigs.views import index, JobsList, DetailView, claimJob
 
 urlpatterns = [
-    path('', index, name='index'),
-    path('jobs/', JobsList.as_view(), name='jobsList'),
-    path('<int:pk>', DetailView.as_view(), name='detail')
+    path('', JobsList.as_view(), name='jobsList'),
+    path('<int:pk>', DetailView.as_view(), name='detail'),
+    path('claim', claimJob, name='claim')
 ]
 
 app_name = 'gigs'

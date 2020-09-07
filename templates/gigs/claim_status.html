@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if job %}
+<h3> Successful added: {{ job.title }} </h3>
+{% endif %}
+{% if error %}
+<h3> error: {{ error }} </h3>
+{% endif %}
+{% endblock content %}
