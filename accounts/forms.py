@@ -8,26 +8,27 @@ userTypeChoices = (('1', 'Campaign Manager'), ('1', 'Worker'))
 
 User = get_user_model()
 
-class WorkerSignUpForm(UserCreationForm): 
+
+class WorkerSignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=200)
 
-    class Meta: 
+    class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+        fields = ('username', 'first_name', 'last_name',
+                  'email', 'password1', 'password2')
 
-    # One option is to override save method. 
+    # One option is to override save method.
     # https://simpleisbetterthancomplex.com/tutorial/2018/01/18/how-to-implement-multiple-user-types-with-django.html
-    # def save(self): 
+    # def save(self):
         # user = super().save(commit=False)
         # worker = Worker(
         # pass
 
 
-
-class ManagerSignUpForm(UserCreationForm): 
+class ManagerSignUpForm(UserCreationForm):
     email = forms.EmailField(max_length=200)
 
-    class Meta: 
+    class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
-
+        fields = ('username', 'first_name', 'last_name',
+                  'email', 'password1', 'password2')
