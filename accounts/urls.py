@@ -8,8 +8,7 @@ urlpatterns = [
     path('registerStudent/', views.register_worker_view, name='registerStudent'),
     path('registerManager/', views.register_manager_view, name='registerManager'),
     path('login/', d_views.LoginView.as_view(), name='login'),
+    path('userDetail/', views.WorkerDetailView.as_view(), name='detail')
 ]
 
 app_name = 'accounts'
-
-# from django.contrib.auth.urls 

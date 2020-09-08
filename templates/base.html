@@ -23,7 +23,7 @@
     <ul class="navbar-nav ml-auto">
         {% if user.is_authenticated %}
         <li class="nav-item right">
-            <a class="nav-link" href="#">Logged in as {{user.email}}</a>
+            <a class="nav-link" href="{% url 'accounts:detail' %}">Logged in as {{user.email}}</a>
         </li>
         {% else %}
         <li class="nav-item">

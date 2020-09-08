@@ -3,10 +3,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.decorators import login_required
-
-from django.views.generic import TemplateView
+from django.views.generic.edit import UpdateView
+from django.views.generic import TemplateView, DetailView
 
 from accounts.forms import WorkerSignUpForm, ManagerSignUpForm
+from accounts.models import User, Worker, Manager
 
 class Index(TemplateView): 
     template_name = 'index.html'
@@ -40,3 +41,8 @@ def register_manager_view(request):
         return redirect('index')
     return render(request, 'register_manager.html', {'form': form})
 
+class WorkerDetailView(DetailView):
+    model = Worker
+
+    def get_object(self): 
+        return Worker.objects.get(user=self.request.user)
