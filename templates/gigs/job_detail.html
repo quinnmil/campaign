@@ -2,17 +2,21 @@
 
 {% block content %}
 
-<h1>{{ job.title }}</h1>
-<h3> Descripton: </h3>
-    <p>{{ job.description }}</p>
+<h1>{{ job.headline }}</h1>
+<p> Description: {{ job.description }}</p>
 
-<p>canidate based in: {{ job.zipcode }}</p>
-<p>campaign: {{ job.campaign.name }}</p>
-<p>for: {{ job.campaign.candidate }}</p>
+<p>Campaign: {{ job.campaign.name }}</p>
+<p>Canidate: {{ job.campaign.candidate }}</p>
+<p>Canidate from: {{ job.zipcode }}</p>
 
 <p> There are currently <strong> {{ job.remaining_count }} </strong> remaining spots availble. </p> 
+{% if jobClaimed %}
+<h4> Instructions: </h4>
+{{ job.instructions|linebreaks }}
+{% else %}
 <form method="post" action={% url 'gigs:claim' %}> 
     {% csrf_token %}
     <input type="hidden" name="job_id", value={{job.pk}}> 
-    <button class="btn btn-primary btn-lg" type="submit"> Claim This Gig </a>
+    <button class="btn btn-primary btn-lg" type="submit"> Grab This Gig </a>
+{% endif %}
 {% endblock %}

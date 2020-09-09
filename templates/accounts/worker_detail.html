@@ -19,7 +19,7 @@
             {% for job in user.worker.jobs_in_progress.all %}
                 <a href={% url 'gigs:detail' job.id %}>
                     <tr>
-                        <td><a href={% url 'gigs:detail' job.id %}>{{ job.title }} </a></td>
+                        <td><a href={% url 'gigs:detail' job.id %}>{{ job.headline }} </a></td>
                         <td><a href={% url 'gigs:detail' job.id %}>{{ job.description }} </a></td>
                         <td><a href={% url 'gigs:detail' job.id %}>{{ job.campaign.name }} </a></td>
                         <td><a href="mailto:job.campaign.email">{{ job.campaign.email }} </a></td>
