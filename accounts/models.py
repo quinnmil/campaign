@@ -17,7 +17,7 @@ class Worker(models.Model):
     jobs_in_progress = models.ManyToManyField(
         Job, related_name='current_workers', blank=True)
     jobs_completed = models.ManyToManyField(
-        Job, related_name='finished_workers', blank=True)
+        Job, related_name='completed_workers', blank=True)
     pay_earned = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
 
     def __str__(self):
@@ -27,4 +27,4 @@ class Worker(models.Model):
 class Manager(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     created_on = models.DateTimeField('date created')
-    campaigns = models.ManyToManyField(Campaign)
+    campaigns = models.ManyToManyField(Campaign, related_name='managers')
