@@ -13,7 +13,6 @@ class User(AbstractUser):
 
 class Worker(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    created_on = models.DateTimeField('date created')
     jobs_in_progress = models.ManyToManyField(
         Job, related_name='current_workers', blank=True)
     jobs_completed = models.ManyToManyField(

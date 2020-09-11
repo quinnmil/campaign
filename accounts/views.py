@@ -29,7 +29,7 @@ def logout_view(request):
 def login_view(request):
     form = AuthenticationForm()
     return render(request, template_name='accounts/login.html', context={"form": form} )
-
+ 
 
 def select_type_view(request):
     return render(request, 'select.html')
@@ -44,8 +44,10 @@ def register_worker_view(request):
         user = authenticate(username=username, password=password)
         user.is_worker = True
         user.save()
+        worker = Worker(user=user)
+        worker.save()
         login(request, user)
-        return redirect('index')
+        return redirect('accounts:detail')
     return render(request, 'register_student.html', {'form': form})
 
 
