@@ -2,44 +2,60 @@
 
 {% block content %}
 
-<h1>{{ user.username }}</h1>
-{% if user.is_worker %}
-    {% if user.worker.jobs_in_progress %}
-        <h3> Current Jobs: </h3>
-        <table class="table table-hover"> 
-            <thead> 
-                <tr>
-                    <th scope="col">Title</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Campaign</th>
-                    <th scope="col">Contact</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for job in user.worker.jobs_in_progress.all %}
-                <a href={% url 'gigs:detail' job.id %}>
+<div class="container">
+    <div class="row justify-content-left header">
+        <h1>{{ user.username }}</h1>
+    </div>
+    <div class="row align-items-center">
+        <div class="col align-self-center">
+            {% if user.is_worker %}
+            {% if user.worker.jobs_in_progress.all %}
+            <h3> Current Jobs: </h3>
+            <table class="table table-hover">
+                <thead>
                     <tr>
-                        <td><a href={% url 'gigs:detail' job.id %}>{{ job.headline }} </a></td>
-                        <td><a href={% url 'gigs:detail' job.id %}>{{ job.description }} </a></td>
-                        <td><a href={% url 'gigs:detail' job.id %}>{{ job.campaign.name }} </a></td>
-                        <td><a href="mailto:job.campaign.email">{{ job.campaign.email }} </a></td>
+                        <th scope="col">Title</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Campaign</th>
+                        <th scope="col">Contact</th>
                     </tr>
-                </a>
-            {% endfor %}
-            </tbody>
-        </table>
-    {% else %}
-    <h3> You are not working any jobs </h3> 
-    {% endif %}
-{% else %}
-<h3> You must be logged in to view this page </h3>
-{% endif %}
+                </thead>
+                <tbody>
+                    {% for job in user.worker.jobs_in_progress.all %}
+                    <a href={% url 'gigs:detail' job.id %}>
+                        <tr>
+                            <td><a href={% url 'gigs:detail' job.id %}>{{ job.headline }} </a></td>
+                            <td><a href={% url 'gigs:detail' job.id %}>{{ job.description }} </a></td>
+                            <td><a href={% url 'gigs:detail' job.id %}>{{ job.campaign.name }} </a></td>
+                            <td><a href="mailto:job.campaign.email">{{ job.campaign.email }} </a></td>
+                        </tr>
+                    </a>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="row justify-content-center">
+                <p> Doesn't look like you're working any gigs </p>
+            </div>
+            <div class="row justify-content-center">
+                <a href="{% url 'gigs:jobsList' %}" class="btn btn-outline-primary">Grab Some</a> {% endif %}
+            </div>
+            {% else %}
+            <h3> You must be logged in to view this page </h3>
+            {% endif %}
+        </div>
+    </div>
+</div>
 
 <style>
     td a {
-      display:block;
-      test-decoration: none;
-      color: inherit;
+        display: block;
+        test-decoration: none;
+        color: inherit;
     }
 
-{% endblock %}
+
+        {
+    }
+</style>
+{% endblock content %}
