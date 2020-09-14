@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render
 
 from gigs.models import Job
+from management.models import ClaimedJob
 
 MAX_JOBS = 2
 
@@ -36,14 +37,16 @@ class DetailView(generic.DetailView):
             context['jobClaimed'] = True
         return context
 
+class ValidationError(Exception):
+    """Raised when new job validation fails"""
 
 def validate_job(current_jobs, new_job):
     """checks that user can add jobs"""
     if len(current_jobs.all()) > MAX_JOBS:
-        raise Exception("Job limit exceeded")
-    for job in current_jobs.all():
-        if job.id == new_job.id:
-            raise Exception("you've already added this job")
+        raise ValidationError("Job limit exceeded")
+    for claimed in current_jobs.all():
+        if claimed.job.id == new_job.id:
+            raise ValidationError("you've already added this job")
 
 
 def claim_job(request):
@@ -55,14 +58,17 @@ def claim_job(request):
     if request.method == 'POST':
         try:
             job_id = request.POST['job_id']
-            job = get_object_or_404(Job, pk=job_id)
+            base_job = get_object_or_404(Job, pk=job_id)
             current_jobs = request.user.worker.jobs_in_progress
             # audit current jobs, something like:
-            validate_job(current_jobs, job)
-            current_jobs.add(job)
+            validate_job(current_jobs, base_job)
+            claimed_job = ClaimedJob(job=Job, worker=request.user.worker)
+            current_jobs.add(claimed_job)
             job.in_progress_count += 1
             job.save()
+            claimed_job.save()
             context['job'] = job
-        except Exception as e:
-            context['error'] = e
+        except ValidationError as err:
+            logger.exception('Unable to add new job %s', err)
+
     return render(request, "gigs/claim_status.html", context)
