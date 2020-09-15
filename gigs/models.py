@@ -28,7 +28,7 @@ class Job(models.Model):
     created_on = models.DateTimeField('Date Created', auto_now_add=True)
     starts_on = models.DateTimeField('Job begins on')
     ends_on = models.DateTimeField('Job ends on')
-    zipcode = models.CharField('Zipcode of campaign', max_length=5)
+    zipcode = models.CharField('Zipcode of Job location', max_length=5)
     pay = models.DecimalField('Pay for completed job',
                               max_digits=5, decimal_places=2)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)

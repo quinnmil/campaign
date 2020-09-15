@@ -33,6 +33,7 @@ AUTH_USER_MODEL = 'accounts.User'
 # Application definition
 
 INSTALLED_APPS = [
+    'management.apps.ManagementConfig',
     'accounts.apps.AccountsConfig',
     'gigs.apps.GigsConfig',
     'django.contrib.admin',

@@ -17,13 +17,14 @@ class ClaimedJob(models.Model):
         (REJECTED, 'R')
     ]
 
-    job = models.models.ForeignKey(
-        "gigs.Job", verbose_name=_("Job"), on_delete=models.CASCADE)
-    worker = models.ForeignKey("accounts.Worker", verbose_name=_(
-        "worker"), on_delete=models.CASCADE)
+    job = models.ForeignKey(
+        "gigs.Job", verbose_name='Job', on_delete=models.CASCADE)
+    worker = models.ForeignKey(
+        'accounts.Worker', verbose_name="worker", on_delete=models.CASCADE)
     status = models.CharField(
-        _("job status"), max_length=1, choices=STATUS_CHOICES, default=IN_PROGRESS)
-    proof = models.TextField(_('proof that job was completed', blank=True))
+        verbose_name='job status', max_length=1, choices=STATUS_CHOICES, default=IN_PROGRESS)
+    proof = models.TextField(
+        verbose_name='proof that job was completed', blank=True)
     started_on = models.DateTimeField('Job claimed on', auto_now_add=True)
 
     def in_progress(self):

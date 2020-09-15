@@ -1,18 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex justify-content-center">
-    <h2>Gigs Available</h2>
-</div>
-<ul>
-    {% for job in jobs %}
-    <div class="card" style="width: 18rem;">
-        <div class="card-body">
-            <h5 class="card-title">{{job.headline}}</h5>
-            <p class="card-text">{{job.description}}</p>
-            <a href="{% url 'gigs:detail' job.id %}" class="btn btn-primary">{{job.remaining_count}} Available</a>
-        </div>
+<div class="container">
+    <div class="row justify-content-center header">
+        <h2>Gigs Available</h2>
     </div>
-    {% endfor %}
-</ul>
+    <ul>
+        {% for job in jobs %}
+        <div class="card" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">{{job.headline}}</h5>
+                <p class="card-text">{{job.description}}</p>
+                <a href="{% url 'gigs:detail' job.id %}" class="btn btn-primary">{{job.remaining_count}} Available</a>
+            </div>
+        </div>
+        {% endfor %}
+    </ul>
+</div>
 {% endblock %}

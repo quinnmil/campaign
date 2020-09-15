@@ -37,13 +37,18 @@ class DetailView(generic.DetailView):
             context['jobClaimed'] = True
         return context
 
+
 class ValidationError(Exception):
     """Raised when new job validation fails"""
 
+
 def validate_job(current_jobs, new_job):
     """checks that user can add jobs"""
+    if new_job.jobs_remaning < 1:
+        raise ValidationError(
+            'No jobs remaining to claim, someone might have beat you to it')
     if len(current_jobs.all()) > MAX_JOBS:
-        raise ValidationError("Job limit exceeded")
+        raise ValidationError('Job limit exceeded')
     for claimed in current_jobs.all():
         if claimed.job.id == new_job.id:
             raise ValidationError("you've already added this job")
@@ -62,13 +67,14 @@ def claim_job(request):
             current_jobs = request.user.worker.jobs_in_progress
             # audit current jobs, something like:
             validate_job(current_jobs, base_job)
-            claimed_job = ClaimedJob(job=Job, worker=request.user.worker)
+            claimed_job = ClaimedJob(job=base_job, worker=request.user.worker)
             current_jobs.add(claimed_job)
-            job.in_progress_count += 1
-            job.save()
+            base_job.in_progress_count += 1
+            base_job.save()
             claimed_job.save()
-            context['job'] = job
+            context['job'] = base_job
         except ValidationError as err:
             logger.exception('Unable to add new job %s', err)
+            context['error'] = err
 
     return render(request, "gigs/claim_status.html", context)
