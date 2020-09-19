@@ -3,6 +3,11 @@ from datetime import datetime
 # Create your models here.
 
 
+class CurrentJobManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status='P')
+
+
 class ClaimedJob(models.Model):
     """Job object, created when gig.Job claimed by worker"""
     IN_PROGRESS = 'P'
@@ -20,12 +25,14 @@ class ClaimedJob(models.Model):
     job = models.ForeignKey(
         "gigs.Job", verbose_name='Job', on_delete=models.CASCADE)
     worker = models.ForeignKey(
-        'accounts.Worker', verbose_name="worker", on_delete=models.CASCADE)
+        'accounts.Worker', verbose_name="worker", related_name='claimed_jobs', on_delete=models.CASCADE)
     status = models.CharField(
         verbose_name='job status', max_length=1, choices=STATUS_CHOICES, default=IN_PROGRESS)
     proof = models.TextField(
         verbose_name='proof that job was completed', blank=True)
     started_on = models.DateTimeField('Job claimed on', auto_now_add=True)
+    in_progress_jobs = CurrentJobManager()
+    objects = models.Manager()
 
     def in_progress(self):
         return self.status is IN_PROGRESS
@@ -38,3 +45,6 @@ class ClaimedJob(models.Model):
 
     def is_expired(self):
         return datetime.now() > self.job.ends_on
+
+    def __str__(self):
+        return self.job.headline

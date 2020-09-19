@@ -38,7 +38,7 @@
                 <p> Doesn't look like you're working any gigs </p>
             </div>
             <div class="row justify-content-center">
-                <a href="{% url 'gigs:jobsList' %}" class="btn btn-outline-primary">Grab Some</a> {% endif %}
+                <a href="{% url 'gigs:list' %}" class="btn btn-outline-primary">Grab Some</a> {% endif %}
             </div>
             {% else %}
             <h3> You must be logged in to view this page </h3>
@@ -55,7 +55,6 @@
     }
 
 
-        {
-    }
+        {}
 </style>
 {% endblock content %}

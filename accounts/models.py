@@ -16,10 +16,6 @@ class User(AbstractUser):
 class Worker(models.Model):
     """Worker object, anyone who is able to complete jobs"""
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    jobs_in_progress = models.ManyToManyField(
-        ClaimedJob, related_name='current_workers', blank=True)
-    jobs_completed = models.ManyToManyField(
-        ClaimedJob, related_name='completed_workers', blank=True)
     pay_earned = models.DecimalField(
         max_digits=8, decimal_places=2, default=0.00)
     experience = models.IntegerField('Earned Experience', default=0)

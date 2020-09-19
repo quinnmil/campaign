@@ -64,17 +64,43 @@ def claim_job(request):
         try:
             job_id = request.POST['job_id']
             base_job = get_object_or_404(Job, pk=job_id)
-            current_jobs = request.user.worker.jobs_in_progress
-            # audit current jobs, something like:
-            validate_job(current_jobs, base_job)
-            claimed_job = ClaimedJob(job=base_job, worker=request.user.worker)
-            current_jobs.add(claimed_job)
+            current = ClaimedJob.objects.filter(job_id=job_id).filter(
+                worker_id=request.user.worker.id)
+
+            other_current = request.user.worker.claimed_jobs.filter(
+                job_id=job_id)
+            if current:
+                raise ValidationError("You've already claimed this job")
+            # validate_job(current_jobs, base_job)
+            ClaimedJob.object.create(
+                job=base_job, worker=request.user.worker)
             base_job.in_progress_count += 1
             base_job.save()
-            claimed_job.save()
             context['job'] = base_job
         except ValidationError as err:
             logger.exception('Unable to add new job %s', err)
             context['error'] = err
 
     return render(request, "gigs/claim_status.html", context)
+
+
+def quit_job(request):
+    """removes job from current user"""
+    context = {}
+    if not request.user.is_worker:
+        HttpResponse("non-worker accounts cannot claim jobs")
+        raise PermissionDenied
+    if request.method == 'POST':
+        try:
+            job_id = request.POST['job_id']
+            base_job = get_object_or_404(Job, pk=job_id)
+            claimed_job = request.user.worker.claimed_jobs.get(
+                job_id=job_id)
+            claimed_job.status = 'Q'
+            claimed_job.save()
+            context['claimedJob'] = claimed_job
+            context['job'] = base_job
+        except ValidationError as err:
+            logger.exception('Unable to add new job %s', err)
+            context['error'] = err
+    return render(request, "gigs/quit_status.html", context)

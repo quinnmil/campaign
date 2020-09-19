@@ -2,9 +2,9 @@
 
 {% block content %}
 {% if job %}
-<h3> You've claimed: {{ job.headline }} </h3>
-<a href="{% url 'gigs:details' job.id %}">
-    <h2> View Job Details and Instructions
+<h3> You are no longer working: {{ job.headline }} </h3>
+<a href="{% url 'gigs:list' %}">
+    <h2> Find Other Jobs
 </a>
 {% endif %}
 {% if error %}
