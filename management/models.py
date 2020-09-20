@@ -25,7 +25,8 @@ class ClaimedJob(models.Model):
     job = models.ForeignKey(
         "gigs.Job", verbose_name='Job', on_delete=models.CASCADE)
     worker = models.ForeignKey(
-        'accounts.Worker', verbose_name="worker", related_name='claimed_jobs', on_delete=models.CASCADE)
+        'accounts.Worker', verbose_name="worker", related_name='claimed_jobs',
+        on_delete=models.CASCADE)
     status = models.CharField(
         verbose_name='job status', max_length=1, choices=STATUS_CHOICES, default=IN_PROGRESS)
     proof = models.TextField(

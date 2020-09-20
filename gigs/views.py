@@ -70,12 +70,13 @@ def claim_job(request):
             other_current = request.user.worker.claimed_jobs.filter(
                 job_id=job_id)
             if current:
-                raise ValidationError("You've already claimed this job")
+                raise ValidationError("you've already claimed this job")
             # validate_job(current_jobs, base_job)
-            ClaimedJob.object.create(
+            claimed_job = ClaimedJob.objects.create(
                 job=base_job, worker=request.user.worker)
             base_job.in_progress_count += 1
             base_job.save()
+            context['claimedJob'] = claimed_job
             context['job'] = base_job
         except ValidationError as err:
             logger.exception('Unable to add new job %s', err)
@@ -98,6 +99,9 @@ def quit_job(request):
                 job_id=job_id)
             claimed_job.status = 'Q'
             claimed_job.save()
+
+            base_job.in_progress_count -= 1
+            base_job.save()
             context['claimedJob'] = claimed_job
             context['job'] = base_job
         except ValidationError as err:

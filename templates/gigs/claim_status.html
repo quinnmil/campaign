@@ -3,7 +3,7 @@
 {% block content %}
 {% if job %}
 <h3> You've claimed: {{ job.headline }} </h3>
-<a href="{% url 'gigs:details' job.id %}">
+<a href="{% url 'gigs:detail' job.id %}">
     <h2> View Job Details and Instructions
 </a>
 {% endif %}
