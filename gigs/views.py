@@ -1,5 +1,5 @@
 import logging
-from django.shortcuts import render, HttpResponse, redirect
+from django.shortcuts import render, HttpResponse
 
 from django.views import generic
 
@@ -30,7 +30,9 @@ class DetailView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         user = self.request.user
-        claimed = user.worker.jobs_in_progress.filter(pk=self.kwargs['pk'])
+        claimed = ClaimedJob.objects.filter(
+            worker=user.worker, job_id=self.kwargs.get(self.pk_url_kwarg)
+        )
         context = super().get_context_data(**kwargs)
         context['jobClaimed'] = False
         if user.is_worker and claimed:
@@ -62,7 +64,7 @@ def claim_job(request):
         raise PermissionDenied
     if request.method == 'POST':
         try:
-            job_id = request.POST['job_id']
+            job_id = request.POST.get('job_id', None)
             base_job = get_object_or_404(Job, pk=job_id)
             current = ClaimedJob.objects.filter(job_id=job_id).filter(
                 worker_id=request.user.worker.id)

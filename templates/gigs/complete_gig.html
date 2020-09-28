@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center header">
+        <h2>Complete Gig</h2>
+    </div>
+    <div>
+        <p>If you've completed this job to the specifications, please attach a simple explinaion of how we can verify
+            that the work was
+            completed.</p>
+        <form method="POST">
+            {% csrf_token %}
+            {{form.as_p}}
+            <input type="hidden" name="claimed_job_id" , value={{claimed_job.id}}>
+            <button class="btn btn-primary btn-lg" type="submit"> Submit Proof </a>
+    </div>
+    </form>
+</div>
+</div> {% endblock %}

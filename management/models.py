@@ -14,12 +14,14 @@ class ClaimedJob(models.Model):
     COMPLETED = 'C'
     QUIT = 'Q'
     REJECTED = 'R'
+    SUBMITTED = 'S'
 
     STATUS_CHOICES = [
         (IN_PROGRESS, 'In Progress'),
         (COMPLETED, 'Completed'),
         (QUIT, 'Quit'),
-        (REJECTED, 'R')
+        (REJECTED, 'R'),
+        (SUBMITTED, 'S')
     ]
 
     job = models.ForeignKey(
@@ -32,8 +34,8 @@ class ClaimedJob(models.Model):
     proof = models.TextField(
         verbose_name='proof that job was completed', blank=True)
     started_on = models.DateTimeField('Job claimed on', auto_now_add=True)
+    objects = models.Manager()  # default manager
     in_progress_jobs = CurrentJobManager()
-    objects = models.Manager()
 
     def in_progress(self):
         return self.status is IN_PROGRESS
