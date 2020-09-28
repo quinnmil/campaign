@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.views import LoginView
 from django.contrib.auth.decorators import login_required
 from django.views.generic.edit import UpdateView
 from django.views.generic import TemplateView, DetailView
@@ -21,15 +21,14 @@ class WorkerDetailView(DetailView):
         return Worker.objects.get(user=self.request.user)
 
 
+class MyLoginView(LoginView):
+    template_name = 'accounts/login.html'
+
+
 def logout_view(request):
     logout(request)
     return redirect('accounts:registerStudent')
 
-
-def login_view(request):
-    form = AuthenticationForm()
-    return render(request, template_name='accounts/login.html', context={"form": form} )
- 
 
 def select_type_view(request):
     return render(request, 'select.html')

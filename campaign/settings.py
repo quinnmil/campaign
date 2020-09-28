@@ -125,3 +125,6 @@ USE_TZ = True
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
 STATIC_URL = '/static/'
+
+# url redirecting after a successful authentication
+LOGIN_REDIRECT_URL = 'accounts:detail'
