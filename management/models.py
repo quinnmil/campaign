@@ -7,6 +7,9 @@ class CurrentJobManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status='P')
 
+    def current_job(self, job_id, worker_id):
+        return self.get_queryset().filter(job_id=job_id, worker_id=worker_id)
+
 
 class ClaimedJob(models.Model):
     """Job object, created when gig.Job claimed by worker"""
@@ -20,8 +23,8 @@ class ClaimedJob(models.Model):
         (IN_PROGRESS, 'In Progress'),
         (COMPLETED, 'Completed'),
         (QUIT, 'Quit'),
-        (REJECTED, 'R'),
-        (SUBMITTED, 'S')
+        (REJECTED, 'Rejected'),
+        (SUBMITTED, 'Submitted')
     ]
 
     job = models.ForeignKey(

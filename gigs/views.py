@@ -66,12 +66,10 @@ def claim_job(request):
         try:
             job_id = request.POST.get('job_id', None)
             base_job = get_object_or_404(Job, pk=job_id)
-            current = ClaimedJob.objects.filter(job_id=job_id).filter(
-                worker_id=request.user.worker.id)
 
-            other_current = request.user.worker.claimed_jobs.filter(
-                job_id=job_id)
-            if current:
+            # current = request.user.worker.claimed_jobs.filter(
+            #     job_id=job_id)
+            if ClaimedJob.in_progress_jobs.current_job(job_id, request.user.worker.id):
                 raise ValidationError("you've already claimed this job")
             # validate_job(current_jobs, base_job)
             claimed_job = ClaimedJob.objects.create(

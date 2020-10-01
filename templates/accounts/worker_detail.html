@@ -9,7 +9,7 @@
     <div class="row align-items-center">
         <div class="col align-self-center">
             {% if user.is_worker %}
-            {% if user.worker.jobs_in_progress.all %}
+            {% if user.worker.claimed_jobs.all %}
             <h3> Current Jobs: </h3>
             <table class="table table-hover">
                 <thead>
@@ -21,13 +21,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for job in user.worker.jobs_in_progress.all %}
-                    <a href={% url 'gigs:detail' job.id %}>
+                    {% for claimedJob in user.worker.claimed_jobs.all %}
+                    <a href={% url 'gigs:detail' claimedJob.job.id %}>
                         <tr>
-                            <td><a href={% url 'gigs:detail' job.id %}>{{ job.headline }} </a></td>
-                            <td><a href={% url 'gigs:detail' job.id %}>{{ job.description }} </a></td>
-                            <td><a href={% url 'gigs:detail' job.id %}>{{ job.campaign.name }} </a></td>
-                            <td><a href="mailto:job.campaign.email">{{ job.campaign.email }} </a></td>
+                            <td><a href={% url 'gigs:detail' claimedJob.job.id %}>{{ claimedJob.job.headline }} </a>
+                            </td>
+                            <td><a href={% url 'gigs:detail' claimedJob.job.id %}>{{ claimedJob.job.description }} </a>
+                            </td>
+                            <td><a href={% url 'gigs:detail' claimedJob.job.id %}>{{ claimedJob.job.campaign.name }}
+                                </a></td>
+                            <td><a href="mailto:claimedJob.job.campaign.email">{{ claimedJob.job.campaign.email }} </a>
+                            </td>
                         </tr>
                     </a>
                     {% endfor %}
