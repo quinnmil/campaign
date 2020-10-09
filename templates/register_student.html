@@ -1,10 +1,9 @@
 {% extends 'base.html' %}
-
+{% block header %}
+<h2> Become an Operator </h2>
+{% endblock header %}
 {% block content %}
 <div class="container">
-    <div class="row justify-content-center header">
-        <h1> Become an Operator </h1>
-    </div>
     <form method="post" action="{% url 'accounts:registerStudent' %}">
         {% csrf_token %}
         {% for field in form %}

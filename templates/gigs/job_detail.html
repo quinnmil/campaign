@@ -1,12 +1,13 @@
 {% extends 'base.html' %}
-
+{% block header %}
+<h2>Gig Detail</h2>
+{% endblock header %}
 {% block content %}
 <div class="container">
     <div class="row justify-content-left header">
         <h1>{{ job.headline }}</h1>
     </div>
-    <p> Description: {{ job.description }}</p>
-
+    <p>Description: {{ job.description }}</p>
     <p>Campaign: {{ job.campaign.name }}</p>
     <p>Canidate: {{ job.campaign.candidate }}</p>
     <p>Canidate from: {{ job.zipcode }}</p>
@@ -15,11 +16,16 @@
     {% if jobClaimed %}
     <h4> Instructions: </h4>
     {{ job.instructions|linebreaks }}
+    div
+    <h4>Completed the task?</h4>
+    <a href={% url 'gigs:complete' job.id %} class="btn btn-primary btn-lg"> Submit Verification </a>
+    </form>
     {% else %}
     <form method="post" action={% url 'gigs:claim' %}>
         {% csrf_token %}
         <input type="hidden" name="job_id" , value={{job.pk}}>
         <button class="btn btn-primary btn-lg" type="submit"> Grab This Gig </a>
+    </form>
 </div>
 {% endif %}
 {% endblock %}

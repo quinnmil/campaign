@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
+{% block header %}
+<h2>Gigs Available</h2>
+{% endblock header %}
+</div>
 {% block content %}
-<div class="container">
-    <div class="row justify-content-center header">
-        <h2>Gigs Available</h2>
-    </div>
-    <ul>
-        {% for job in jobs %}
-        <div class="card" style="width: 18rem;">
-            <div class="card-body">
-                <h5 class="card-title">{{job.headline}}</h5>
-                <p class="card-text">{{job.description}}</p>
-                <a href="{% url 'gigs:detail' job.id %}" class="btn btn-primary">{{job.remaining_count}} Available</a>
-            </div>
+<ul>
+    {% for job in jobs %}
+    <div class="card" style="width: 18rem;">
+        <div class="card-body">
+            <h5 class="card-title">{{job.headline}}</h5>
+            <p class="card-text">{{job.description}}</p>
+            <a href="{% url 'gigs:detail' job.id %}" class="btn btn-primary">{{job.remaining_count}} Available</a>
         </div>
-        {% endfor %}
-    </ul>
+    </div>
+    {% endfor %}
+</ul>
 </div>
 {% endblock %}

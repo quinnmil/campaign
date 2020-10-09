@@ -1,10 +1,16 @@
 {% extends 'base.html' %}
-
+{% block header %}
+{% if error %}
+<h2>Unable to claim gig</h2>
+{% else %}
+<h2>Successful claimed gig</h2>
+{% endif %}
+{% endblock header %}
 {% block content %}
 {% if job %}
 <h3> You've claimed: {{ job.headline }} </h3>
 <a href="{% url 'gigs:detail' job.id %}">
-    <h2> View Job Details and Instructions
+    <h4> View Gig Details and Instructions </h4>
 </a>
 {% endif %}
 {% if error %}

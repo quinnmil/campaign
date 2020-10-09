@@ -18,7 +18,9 @@ class WorkerDetailView(DetailView):
     model = Worker
 
     def get_object(self):
-        return Worker.objects.get(user=self.request.user)
+        if self.request.user.is_worker:
+            return Worker.objects.get(user=self.request.user)
+        return redirect(self.request, 'accounts/login.html')
 
 
 class MyLoginView(LoginView):
@@ -35,6 +37,7 @@ def select_type_view(request):
 
 
 def register_worker_view(request):
+    """registers worker, creates new user"""
     form = WorkerSignUpForm(request.POST)
     if form.is_valid():
         form.save()
@@ -43,7 +46,7 @@ def register_worker_view(request):
         user = authenticate(username=username, password=password)
         user.is_worker = True
         user.save()
-        worker = Worker(user=user)
+        worker = Worker.objects.create(user=user)
         worker.save()
         login(request, user)
         return redirect('accounts:detail')
