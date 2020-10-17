@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
-{% block content %}
 
+{% block header %}
+<h2>Account Detail for {{ user.email }}</h2>
+{% endblock header %}
+{% block content %}
 <div class="container">
-    <div class="row justify-content-left header">
-        <h1>{{ user.username }}</h1>
-    </div>
     <div class="row align-items-center">
         <div class="col align-self-center">
             {% if user.is_worker %}
             {% if user.worker.claimed_jobs.all %}
-            <h3> Current Jobs: </h3>
+            <h4> Current Jobs: </h4>
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -37,6 +37,15 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="row">
+                <div class="col">
+                    <h4>Experience Earned: {{user.worker.experience}}xp</h4>
+                    <p>Gain experience by completing jobs. (More info coming soon)</p>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+                <a href={% url 'accounts:logout' %}>Logout</a>
+            </div>
             {% else %}
             <div class="row justify-content-center">
                 <p> Doesn't look like you're working any gigs </p>
