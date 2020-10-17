@@ -5,6 +5,7 @@ from .models import Job, Campaign
 from management.models import ClaimedJob
 from accounts.models import User, Worker, Manager
 from .views import ValidationError
+from django.utils import timezone
 
 
 def create_job():
@@ -14,7 +15,7 @@ def create_job():
     return Job.objects.create(description="description", headline="testJob",
                               instructions="instructions", initial_count=5,
                               starts_on='2020-09-15 05:27:28+00:00',
-                              ends_on='2020-09-17 05:27:31+00:00',
+                              ends_on=timezone.now() + timezone.timedelta(days=1),
                               zipcode='00001', pay='10', campaign=campaign)
 
 
@@ -28,6 +29,8 @@ def create_worker():
 
 
 class QuitJobTest(TestCase):
+    """tests related to quitting job"""
+
     def setUp(self):
         self.client = Client()
         self.base_job = create_job()
@@ -51,6 +54,8 @@ class QuitJobTest(TestCase):
 
 
 class ClaimJobTest(TestCase):
+    """tests relating to claiming job"""
+
     def setUp(self):
         self.client = Client()
         self.base_job = create_job()

@@ -19,6 +19,12 @@ class Worker(models.Model):
     pay_earned = models.DecimalField(
         max_digits=8, decimal_places=2, default=0.00)
     experience = models.IntegerField('Earned Experience', default=0)
+    max_current_jobs = models.PositiveSmallIntegerField(
+        'maximum simultaneous jobs', default=2)
+
+    def can_claim(self):
+        """returns if the user is able to claim a requested job"""
+        return len(self.claimed_jobs.all()) < self.max_current_jobs
 
     def __str__(self):
         return self.user.username

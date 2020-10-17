@@ -1,12 +1,12 @@
 from django.db import models
-
+from django.utils.timezone import now
 # Create your models here.
 
 
 class Campaign(models.Model):
     """
     Object representing a campaign.
-    Campaigns create jobs, and are managed by 'managers'" 
+    Campaigns create jobs, and are managed by 'managers'"
     """
     name = models.CharField(max_length=30)
     candidate = models.CharField(max_length=20)
@@ -34,7 +34,13 @@ class Job(models.Model):
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
 
     def remaining_count(self):
+        """gets jobs reminaing to be claimed"""
         return self.initial_count - self.in_progress_count
+
+    def can_claim(self):
+        """checks if this job is claimable"""
+        return (self.remaining_count() >= 1
+                and self.ends_on > now())
 
     def __str__(self):
         return self.headline

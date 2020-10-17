@@ -1,15 +1,16 @@
 import logging
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, get_object_or_404
 
 from django.views import generic
+from django.urls import reverse, reverse_lazy
 
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, render
+from django.utils.decorators import method_decorator
 
 from gigs.models import Job
-from management.models import ClaimedJob
+from management.models import ClaimedJob, ValidationError
 
 MAX_JOBS = 2
 
@@ -40,22 +41,6 @@ class DetailView(generic.DetailView):
         return context
 
 
-class ValidationError(Exception):
-    """Raised when new job validation fails"""
-
-
-def validate_job(current_jobs, new_job):
-    """checks that user can add jobs"""
-    if new_job.jobs_remaning < 1:
-        raise ValidationError(
-            'No jobs remaining to claim, someone might have beat you to it')
-    if len(current_jobs.all()) > MAX_JOBS:
-        raise ValidationError('Job limit exceeded')
-    for claimed in current_jobs.all():
-        if claimed.job.id == new_job.id:
-            raise ValidationError("you've already added this job")
-
-
 def claim_job(request):
     """Assigns job to current user"""
     context = {}
@@ -66,20 +51,12 @@ def claim_job(request):
         try:
             job_id = request.POST.get('job_id', None)
             base_job = get_object_or_404(Job, pk=job_id)
-
-            # current = request.user.worker.claimed_jobs.filter(
-            #     job_id=job_id)
-            if ClaimedJob.in_progress_jobs.current_job(job_id, request.user.worker.id):
-                raise ValidationError("you've already claimed this job")
-            # validate_job(current_jobs, base_job)
-            claimed_job = ClaimedJob.objects.create(
-                job=base_job, worker=request.user.worker)
-            base_job.in_progress_count += 1
-            base_job.save()
+            claimed_job = ClaimedJob.in_progress_jobs.create(
+                base_job, request.user.worker)
             context['claimedJob'] = claimed_job
             context['job'] = base_job
         except ValidationError as err:
-            logger.exception('Unable to add new job %s', err)
+            logger.exception('Unable to claimed new gig %s', err)
             context['error'] = err
 
     return render(request, "gigs/claim_status.html", context)

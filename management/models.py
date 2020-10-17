@@ -3,12 +3,30 @@ from datetime import datetime
 # Create your models here.
 
 
+class ValidationError(Exception):
+    """Raised when new job validation fails"""
+
+
 class CurrentJobManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(status='P')
 
     def current_job(self, job_id, worker_id):
+        """returns claimedJob of worker matching the job_id"""
         return self.get_queryset().filter(job_id=job_id, worker_id=worker_id)
+
+    def create(self, job, worker):
+        """creates new claimedJob or raises exception"""
+        if self.current_job(job.id, worker.id):
+            raise ValidationError('job already claimed by worker')
+        if not job.can_claim():
+            raise ValidationError('Unable to claim job')
+        if not worker.can_claim():
+            raise ValidationError('worker is unable to claim another job')
+        job.in_progress_count += 1
+        job.save()
+        return super(CurrentJobManager, self).create(
+            job=job, worker=worker)
 
 
 class ClaimedJob(models.Model):
