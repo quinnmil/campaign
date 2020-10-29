@@ -4,7 +4,7 @@ from django.urls import reverse
 from .models import Job, Campaign
 from management.models import ClaimedJob
 from accounts.models import User, Worker, Manager
-from .views import ValidationError
+from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 

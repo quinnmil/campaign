@@ -1,10 +1,7 @@
 from django.db import models
-from datetime import datetime
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 # Create your models here.
-
-
-class ValidationError(Exception):
-    """Raised when new job validation fails"""
 
 
 class CurrentJobManager(models.Manager):
@@ -18,11 +15,11 @@ class CurrentJobManager(models.Manager):
     def create(self, job, worker):
         """creates new claimedJob or raises exception"""
         if self.current_job(job.id, worker.id):
-            raise ValidationError('job already claimed by worker')
+            raise ValidationError('Job already claimed by worker')
         if not job.can_claim():
             raise ValidationError('Unable to claim job')
         if not worker.can_claim():
-            raise ValidationError('worker is unable to claim another job')
+            raise ValidationError('Worker is unable to claim another job')
         job.in_progress_count += 1
         job.save()
         return super(CurrentJobManager, self).create(
@@ -55,6 +52,8 @@ class ClaimedJob(models.Model):
     proof = models.TextField(
         verbose_name='proof that job was completed', blank=True)
     started_on = models.DateTimeField('Job claimed on', auto_now_add=True)
+    completed_on = models.DateTimeField('Job completed on', blank=True)
+    approved_by = models.ForeignKey(User, on_delete=models.PROTECT, blank=True)
     objects = models.Manager()  # default manager
     in_progress_jobs = CurrentJobManager()
 
@@ -68,7 +67,12 @@ class ClaimedJob(models.Model):
         return datetime.now - self.job.ends_on
 
     def is_expired(self):
-        return datetime.now() > self.job.ends_on
+        return timezone.now() > self.job.ends_on
 
     def __str__(self):
         return self.job.headline
+
+    def approve(self, _user, comment):
+        self.status = COMPLETED
+        self.completed_on = timezone.now()
+        # future feature -> add logic to check that user is manager for job's campaign

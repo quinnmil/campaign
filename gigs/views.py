@@ -10,7 +10,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from gigs.models import Job
-from management.models import ClaimedJob, ValidationError
+from management.models import ClaimedJob
+from django.core.exceptions import ValidationError
 
 MAX_JOBS = 2
 
