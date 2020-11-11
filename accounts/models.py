@@ -1,16 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from gigs.models import Campaign, Job
-from management.models import ClaimedJob
-
-# Create your models here.
+from django.contrib.auth import authenticate
+from gigs.models import Campaign
 
 
 class User(AbstractUser):
     """Generic User object"""
     is_manager = models.BooleanField(default=False)
     is_worker = models.BooleanField(default=False)
-    # cell_number = models.CharField()
 
 
 class Worker(models.Model):
@@ -25,6 +22,28 @@ class Worker(models.Model):
     def can_claim(self):
         """returns if the user is able to claim a requested job"""
         return len(self.claimed_jobs.all()) < self.max_current_jobs
+
+    @classmethod
+    def create(
+        cls,
+        username,
+        password
+    ):
+        """Create User and associated Worker account
+
+        Returns (tuple)
+            [0] User
+            [1] Worker
+        """
+        user = authenticate(username=username, password=password)
+        user.is_worker = True
+        user.save()
+        worker = cls.objects.create(
+            user=user,
+            pay_earned=0,
+            experience=0
+        )
+        return user, worker
 
     def __str__(self):
         return self.user.username
