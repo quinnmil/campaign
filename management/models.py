@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from accounts.models import User
 # Create your models here.
 
 
@@ -54,17 +55,19 @@ class ClaimedJob(models.Model):
     started_on = models.DateTimeField('Job claimed on', auto_now_add=True)
     completed_on = models.DateTimeField('Job completed on', blank=True)
     approved_by = models.ForeignKey(User, on_delete=models.PROTECT, blank=True)
+    comment = models.TextField(
+        verbose_name='Explanation why approved or rejected', default='')
     objects = models.Manager()  # default manager
     in_progress_jobs = CurrentJobManager()
 
     def in_progress(self):
-        return self.status is IN_PROGRESS
+        return self.status is self.IN_PROGRESS
 
     def is_completed(self):
-        return self.status is COMPLETED
+        return self.status is self.COMPLETED
 
     def time_remaining(self):
-        return datetime.now - self.job.ends_on
+        return timezone.now() - self.job.ends_on
 
     def is_expired(self):
         return timezone.now() > self.job.ends_on
@@ -72,7 +75,12 @@ class ClaimedJob(models.Model):
     def __str__(self):
         return self.job.headline
 
-    def approve(self, _user, comment):
-        self.status = COMPLETED
+    def approve(self, comment):
+        self.status = self.COMPLETED
+        self.comment = comment
         self.completed_on = timezone.now()
         # future feature -> add logic to check that user is manager for job's campaign
+        self.save()
+
+    def reject(self, comment):
+        raise NotImplementedError()
