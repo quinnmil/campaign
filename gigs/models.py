@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.timezone import now
-# Create your models here.
 
 
 class Campaign(models.Model):
@@ -32,6 +31,16 @@ class Job(models.Model):
     pay = models.DecimalField('Pay for completed job',
                               max_digits=5, decimal_places=2)
     campaign = models.ForeignKey(Campaign, on_delete=models.CASCADE)
+
+    def decrement_count(self, amount=1):
+        """decreases in progress count"""
+        self.in_progress_count -= amount
+        self.save()
+
+    def increment_count(self, amount=1):
+        """increases in progress count"""
+        self.in_progress_count += amount
+        self.save()
 
     def remaining_count(self):
         """gets jobs reminaing to be claimed"""

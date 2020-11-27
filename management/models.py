@@ -2,6 +2,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils import timezone
 from accounts.models import User
+from . import errors
+from gigs.models import Job
 # Create your models here.
 
 
@@ -51,10 +53,12 @@ class ClaimedJob(models.Model):
     status = models.CharField(
         verbose_name='job status', max_length=1, choices=STATUS_CHOICES, default=IN_PROGRESS)
     proof = models.TextField(
-        verbose_name='proof that job was completed', blank=True)
+        verbose_name='proof that job was completed', null=True, blank=True)
     started_on = models.DateTimeField('Job claimed on', auto_now_add=True)
-    completed_on = models.DateTimeField('Job completed on', blank=True)
-    approved_by = models.ForeignKey(User, on_delete=models.PROTECT, blank=True)
+    completed_on = models.DateTimeField(
+        'Job completed on', null=True, blank=True)
+    approved_by = models.ForeignKey(
+        User, on_delete=models.PROTECT, null=True, blank=True)
     comment = models.TextField(
         verbose_name='Explanation why approved or rejected', default='')
     objects = models.Manager()  # default manager
@@ -84,3 +88,34 @@ class ClaimedJob(models.Model):
 
     def reject(self, comment):
         raise NotImplementedError()
+
+    @classmethod
+    def create(
+        cls,
+        user,
+        job_id
+    ):
+        if not user.is_worker:
+            raise errors.UserRollError
+        if not user.worker.can_claim:
+            raise errors.OverworkedError
+        if user.worker.claimed_jobs.filter(job_id=job_id).exists():
+            raise errors.AlreadyClaimedError
+        try:
+            job = Job.objects.get(pk=job_id)
+            job.increment_count()
+            claimed_job = cls.objects.create(
+                status=cls.IN_PROGRESS,
+                job=job,
+                worker=user.worker
+            )
+        except Job.DoesNotExist:
+            raise errors.InternalError
+
+        return claimed_job
+
+    def quit_job(self):
+        self.status = self.QUIT
+        self.job.decrement_count()
+        self.save()
+        return self

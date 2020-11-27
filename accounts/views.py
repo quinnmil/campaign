@@ -1,13 +1,10 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout
 from django.contrib.auth.views import LoginView
-from django.contrib.auth.decorators import login_required
-from django.views.generic.edit import UpdateView
 from django.views.generic import TemplateView, DetailView
 
-from accounts.forms import WorkerSignUpForm, ManagerSignUpForm
-from accounts.models import User, Worker, Manager
+from accounts.forms import WorkerSignUpForm
+from accounts.models import Worker
 
 
 class Index(TemplateView):
@@ -43,25 +40,7 @@ def register_worker_view(request):
         form.save()
         username = form.cleaned_data.get('username')
         password = form.cleaned_data.get('password1')
-        user = authenticate(username=username, password=password)
-        user.is_worker = True
-        user.save()
-        worker = Worker.objects.create(user=user)
-        worker.save()
+        user, _ = Worker.create(username, password)
         login(request, user)
         return redirect('accounts:detail')
     return render(request, 'register_student.html', {'form': form})
-
-
-def register_manager_view(request):
-    form = ManagerSignUpForm(request.POST)
-    if form.is_valid():
-        form.save()
-        username = form.cleaned_data.get('username')
-        password = form.cleaned_data.get('password1')
-        user = authenticate(username=username, password=password)
-        user.is_manager = True
-        user.save()
-        login(request, user)
-        return redirect('index')
-    return render(request, 'register_manager.html', {'form': form})
