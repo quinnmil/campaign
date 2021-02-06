@@ -1,6 +1,7 @@
 from django.test import TestCase, Client
 from django.urls import reverse
 # Create your tests here.
+from util.tests import TestSetup
 from .models import Job, Campaign
 from management.models import ClaimedJob
 from accounts.models import User, Worker, Manager
@@ -8,33 +9,15 @@ from django.core.exceptions import ValidationError
 from django.utils import timezone
 
 
-def create_job():
-    """create generic job for use in tests"""
-    campaign = Campaign.objects.create(name='testCampaign', candidate='candidate',
-                                       description='description', email='email@domain.com')
-    return Job.objects.create(description="description", headline="testJob",
-                              instructions="instructions", initial_count=5,
-                              starts_on='2020-09-15 05:27:28+00:00',
-                              ends_on=timezone.now() + timezone.timedelta(days=1),
-                              zipcode='00001', pay='10', campaign=campaign)
-
-
-def create_worker():
-    """create worker to use in tests"""
-    user = User.objects.create(
-        is_worker=True, username='testUser')
-    user.set_password('secret')
-    user.save()
-    return Worker.objects.create(user=user)
-
-
+# These Views-based tests are deprecated and replaced by tests in ../management/tests
 class QuitJobTest(TestCase):
     """tests related to quitting job"""
 
     def setUp(self):
         self.client = Client()
-        self.base_job = create_job()
-        self.worker = create_worker()
+        setup = TestSetup()
+        self.base_job = setup.job
+        self.worker = setup.worker
 
     def test_can_quit_job(self):
         """workers can quit jobs"""
@@ -58,8 +41,9 @@ class ClaimJobTest(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.base_job = create_job()
-        self.worker = create_worker()
+        setup = TestSetup()
+        self.base_job = setup.job
+        self.worker = setup.worker
 
     def test_can_claim_job(self):
         """workers can claim jobs"""
