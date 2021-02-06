@@ -5,6 +5,7 @@ from django.views.generic import TemplateView, DetailView
 
 from accounts.forms import WorkerSignUpForm
 from accounts.models import Worker
+from django.urls import reverse, reverse_lazy
 
 
 class Index(TemplateView):
@@ -15,9 +16,10 @@ class WorkerDetailView(DetailView):
     model = Worker
 
     def get_object(self):
-        if self.request.user.is_worker:
-            return Worker.objects.get(user=self.request.user)
-        return redirect(self.request, 'accounts/login.html')
+        if self.request.user.is_authenticated and self.request.user.is_worker:
+            return Worker.objects.get(user=self.request.user.id)
+        # fixme - this redirect doesn't work
+        return redirect('accounts:login')
 
 
 class MyLoginView(LoginView):
@@ -40,7 +42,17 @@ def register_worker_view(request):
         form.save()
         username = form.cleaned_data.get('username')
         password = form.cleaned_data.get('password1')
-        user, _ = Worker.create(username, password)
+        email = form.cleaned_data.get('email')
+        first_name = form.cleaned_data.get('first_name')
+        last_name = form.cleaned_data.get('last_name')
+
+        user, _ = Worker.create(
+            username=username,
+            password=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name
+        )
         login(request, user)
         return redirect('accounts:detail')
     return render(request, 'register_student.html', {'form': form})

@@ -27,7 +27,10 @@ class Worker(models.Model):
     def create(
         cls,
         username,
-        password
+        password,
+        email,
+        first_name,
+        last_name
     ):
         """Create User and associated Worker account
 
@@ -35,7 +38,13 @@ class Worker(models.Model):
             [0] User
             [1] Worker
         """
-        user = authenticate(username=username, password=password)
+        user = User.objects.create(
+            username=username,
+            password=password,
+            email=email,
+            first_name=first_name,
+            last_name=last_name
+        )
         user.is_worker = True
         user.save()
         worker = cls.objects.create(

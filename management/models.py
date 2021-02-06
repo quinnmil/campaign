@@ -8,25 +8,13 @@ from gigs.models import Job
 
 
 class CurrentJobManager(models.Manager):
+    # Deprecated
     def get_queryset(self):
         return super().get_queryset().filter(status='P')
 
     def current_job(self, job_id, worker_id):
         """returns claimedJob of worker matching the job_id"""
         return self.get_queryset().filter(job_id=job_id, worker_id=worker_id)
-
-    def create(self, job, worker):
-        """creates new claimedJob or raises exception"""
-        if self.current_job(job.id, worker.id):
-            raise ValidationError('Job already claimed by worker')
-        if not job.can_claim():
-            raise ValidationError('Unable to claim job')
-        if not worker.can_claim():
-            raise ValidationError('Worker is unable to claim another job')
-        job.in_progress_count += 1
-        job.save()
-        return super(CurrentJobManager, self).create(
-            job=job, worker=worker)
 
 
 class ClaimedJob(models.Model):
@@ -36,6 +24,8 @@ class ClaimedJob(models.Model):
     QUIT = 'Q'
     REJECTED = 'R'
     SUBMITTED = 'S'
+
+    APPROVED = 'Approved'
 
     STATUS_CHOICES = [
         (IN_PROGRESS, 'In Progress'),
@@ -79,7 +69,7 @@ class ClaimedJob(models.Model):
     def __str__(self):
         return self.job.headline
 
-    def approve(self, comment):
+    def approve(self, comment=APPROVED):
         self.status = self.COMPLETED
         self.comment = comment
         self.completed_on = timezone.now()
